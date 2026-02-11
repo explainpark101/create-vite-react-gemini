@@ -32,13 +32,13 @@ powershell -c "irm bun.sh/install.ps1 | iex"
 ## 사용법
 
 ```bash
-bun create vite-react-gemini <프로젝트명>
+bun create vite-react-gemini@latest <프로젝트명>
 ```
 
 또는 현재 디렉터리에 생성:
 
 ```bash
-bun create vite-react-gemini .
+bun create vite-react-gemini@latest .
 ```
 
 ## 포함 사항
