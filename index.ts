@@ -42,19 +42,18 @@ async function main() {
 
   // 2. lucide-react, tailwindcss, @tailwindcss/vite 설치 (최신 버전)
   console.log("│  Adding Dependencies: lucide-react, tailwindcss, @tailwindcss/vite...");
-  await $`bun add lucide-react tailwindcss @tailwindcss/vite --no-save`.cwd(projectDir).quiet();
+  await $`bun install lucide-react tailwindcss @tailwindcss/vite`.cwd(projectDir).quiet();
 
   // 3. vite.config.js 수정 - Tailwind 플러그인 추가
   console.log("│  Adding tailwind to vite.config.js...");
   const viteConfigPath = path.join(projectDir, "vite.config.js");
   const newViteConfig = `
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [tailwindcss(),
-    react()],
+  plugins: [react(), tailwindcss()],
   base: process.env.VITE_BASE_PATH || '/',
 })
   `.trim();
