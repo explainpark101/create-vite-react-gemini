@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "bin": {
-    "create-vite-react-gemini": "index.ts"
+    "create-vite-react-gemini": "index.js"
   },
   "devDependencies": {
     "@types/bun": "^1.3.9"
