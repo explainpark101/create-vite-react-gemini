@@ -12,22 +12,23 @@ import { $ } from "bun";
 import path from "node:path";
 import { existsSync, mkdirSync } from "node:fs";
 
-const targetDir = process.argv[2] ?? "my-vite-react-app";
+const targetDir = process.argv[2] ?? "my-gemini-react-app";
 const cwd = process.cwd();
 const projectDir = path.isAbsolute(targetDir)
   ? targetDir
   : path.join(cwd, targetDir);
 
 async function main() {
-  console.log("◇  create-vite-react-gemini\n");
+  console.log("◇  create-vite-react-gemini");
   console.log(
-    `│  Creating Vite + React project with Tailwind CSS & Lucide icons...\n`
+    `│  Creating Vite + React project with Tailwind CSS & Lucide icons...`
   );
 
   // 1. create-vite로 react 템플릿 프로젝트 생성
-  const createViteResult = await $`bunx create-vite@latest ${targetDir} --template react`.cwd(
+  const createViteResult = await $`bun create vite ${targetDir} --no-interactive --template react`.cwd(
     cwd
   ).quiet();
+  // .quiet();
 
   if (createViteResult.exitCode !== 0) {
     console.error("Failed to create Vite project");
@@ -40,10 +41,11 @@ async function main() {
   }
 
   // 2. lucide-react, tailwindcss, @tailwindcss/vite 설치 (최신 버전)
-  console.log("│  Installing lucide-react, tailwindcss, @tailwindcss/vite...\n");
-  await $`bun add lucide-react tailwindcss @tailwindcss/vite`.cwd(projectDir);
+  console.log("│  Adding Dependencies: lucide-react, tailwindcss, @tailwindcss/vite...");
+  await $`bun add lucide-react tailwindcss @tailwindcss/vite --no-save`.cwd(projectDir);
 
   // 3. vite.config.js 수정 - Tailwind 플러그인 추가
+  console.log("│  Adding tailwind to vite.config.js...");
   const viteConfigPath = path.join(projectDir, "vite.config.js");
   const viteConfig = await Bun.file(viteConfigPath).text();
   const newViteConfig = viteConfig
@@ -58,17 +60,19 @@ import tailwindcss from '@tailwindcss/vite'`
   await Bun.write(viteConfigPath, newViteConfig);
 
   // 4. index.css 수정 - Tailwind import 추가
+  console.log("│  Adding Tailwind to index.css...");
   const indexCssPath = path.join(projectDir, "src", "index.css");
-  const indexCss = await Bun.file(indexCssPath).text();
-  const newIndexCss = `@import "tailwindcss";
-
-${indexCss}`;
+  const newIndexCss = `@import "tailwindcss";`;
 
   await Bun.write(indexCssPath, newIndexCss);
 
   // 5. github actions 설정 추가
+  console.log("│  Adding GitHub Actions...");
   const githubActionsPath = path.join(projectDir, ".github", "workflows", "deploy.yml");
   // create directory if not exists
+  if (!existsSync(path.join(projectDir, ".github"))) {
+    mkdirSync(path.join(projectDir, ".github"));
+  }
   if (!existsSync(path.join(projectDir, ".github", "workflows"))) {
     mkdirSync(path.join(projectDir, ".github", "workflows"));
   }

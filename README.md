@@ -1,6 +1,33 @@
 # create-vite-react-gemini
 
-Vite + React + Tailwind CSS + Lucide React 프로젝트를 빠르게 생성하는 Bun create 스크립트입니다.
+Vite + React + Tailwind CSS + Lucide React 프로젝트를 빠르게 생성하는 Bun 전용 스크립트입니다.
+
+---
+
+## ⚠️ Bun 전용 — Node.js 미지원
+
+> **이 패키지는 Bun 전용입니다. Node.js에서는 동작하지 않습니다.**
+
+- ✅ **Bun** — 공식 지원
+- ❌ **Node.js** — 미지원 (설치 및 실행 불가)
+
+`npx` 또는 `npm create`로 실행하면 오류가 발생합니다. 반드시 **Bun**이 설치된 환경에서 `bun create`로 실행하세요.
+
+### Bun 설치
+
+Bun이 없다면 먼저 설치하세요:
+
+```bash
+# macOS / Linux
+curl -fsSL https://bun.sh/install | bash
+
+# Windows (PowerShell)
+powershell -c "irm bun.sh/install.ps1 | iex"
+```
+
+[Bun 공식 문서](https://bun.sh/docs/installation)에서 자세한 설치 방법을 확인할 수 있습니다.
+
+---
 
 ## 사용법
 
@@ -19,6 +46,7 @@ bun create vite-react-gemini .
 - **Vite** - React (JavaScript) 템플릿
 - **Tailwind CSS** - `tailwindcss`, `@tailwindcss/vite` (최신 버전)
 - **Lucide React** - 아이콘 라이브러리
+- **GitHub Actions** - GitHub Pages 배포 워크플로우
 
 ## 생성 후 실행
 
