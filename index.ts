@@ -42,20 +42,22 @@ async function main() {
 
   // 2. lucide-react, tailwindcss, @tailwindcss/vite 설치 (최신 버전)
   console.log("│  Adding Dependencies: lucide-react, tailwindcss, @tailwindcss/vite...");
-  await $`bun add lucide-react tailwindcss @tailwindcss/vite --no-save`.cwd(projectDir);
+  await $`bun add lucide-react tailwindcss @tailwindcss/vite --no-save`.cwd(projectDir).quiet();
 
   // 3. vite.config.js 수정 - Tailwind 플러그인 추가
   console.log("│  Adding tailwind to vite.config.js...");
   const viteConfigPath = path.join(projectDir, "vite.config.js");
-  const viteConfig = await Bun.file(viteConfigPath).text();
-  const newViteConfig = viteConfig
-    .replace(
-      "import { defineConfig } from 'vite'\nimport react from '@vitejs/plugin-react'",
-      `import { defineConfig } from 'vite'
+  const newViteConfig = `
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'`
-    )
-    .replace("plugins: [react()]", "plugins: [react(), tailwindcss()]");
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [tailwindcss(),
+    react()],
+  base: process.env.VITE_BASE_PATH || '/',
+})
+  `.trim();
 
   await Bun.write(viteConfigPath, newViteConfig);
 
@@ -136,10 +138,20 @@ jobs:
   `.trim()
   await Bun.write(githubActionsPath, newGithubActions);
 
-  console.log("└  Done! Run:\n");
+  console.log("└  Done!\n");
+  console.log("  [1] 다음 명령으로 개발 서버 실행:\n");
   console.log(`   cd ${targetDir}`);
   console.log("   bun install");
   console.log("   bun dev\n");
+  console.log("  [2] Gemini가 생성한 React 코드를 아래 파일에 붙여넣으세요:");
+  console.log(`   src/App.jsx\n`);
+  console.log("  [3] GitHub에 업로드 후 Pages 배포:");
+  console.log("    (1) https://github.com/new 에 접속하여 새 레포지토리 생성");
+  console.log("    (2) 생성된 레포지토리의 url을 복사");
+  console.log("    (3) 아래 명령어를 실행하여 GitHub에 업로드 (복사한 url을 레포지토리 url로 대체)");
+  console.log("   git init \n git add . \n git commit -m \"Initial commit\"\n git remote add origin <복사한 url> \n git push -u origin main");
+  console.log("    (4) Github Actions가 완료된 이후 Repository 설정에서 Pages의 Branch를 gh-pages로 설정");
+  console.log("    (5) Github Pages URL로 접속");
 }
 
 main().catch((err) => {
