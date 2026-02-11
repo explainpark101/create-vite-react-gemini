@@ -10,7 +10,7 @@
 
 import { $ } from "bun";
 import path from "node:path";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 
 const targetDir = process.argv[2] ?? "my-vite-react-app";
 const cwd = process.cwd();
@@ -65,6 +65,72 @@ import tailwindcss from '@tailwindcss/vite'`
 ${indexCss}`;
 
   await Bun.write(indexCssPath, newIndexCss);
+
+  // 5. github actions 설정 추가
+  const githubActionsPath = path.join(projectDir, ".github", "workflows", "deploy.yml");
+  // create directory if not exists
+  if (!existsSync(path.join(projectDir, ".github", "workflows"))) {
+    mkdirSync(path.join(projectDir, ".github", "workflows"));
+  }
+  const newGithubActions = `
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    environment:
+      name: github-pages
+      url: \${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build
+        run: bun run build
+        env:
+          VITE_BASE_PATH: /\${{ github.event.repository.name }}/
+
+      - name: Verify build output
+        run: |
+          echo "Build output contents:"
+          ls -la dist/ || echo "dist folder not found"
+          if [ -f "dist/index.html" ]; then
+            echo "✓ index.html found"
+          else
+            echo "✗ index.html not found. build failed"
+            exit 1
+          fi
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: \${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: dist
+  `.trim()
+  await Bun.write(githubActionsPath, newGithubActions);
 
   console.log("└  Done! Run:\n");
   console.log(`   cd ${targetDir}`);
