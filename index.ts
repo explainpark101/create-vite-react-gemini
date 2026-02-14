@@ -137,6 +137,32 @@ jobs:
   `.trim()
   await Bun.write(githubActionsPath, newGithubActions);
 
+  // 6. TypeScript 지원 추가 여부
+  const addTs = prompt("Add TypeScript support? (y/n): ");
+  const answers = ["y", "yes", "1", "ㅛ"];
+  const wantTs = answers.includes(addTs?.toLowerCase()?.trim() ?? "");
+  if (wantTs) {
+    console.log("│  Adding TypeScript support...");
+    await $`bun add -d typescript @types/react @types/react-dom`.cwd(
+      projectDir
+    ).quiet();
+    await $`bunx tsc --init`.cwd(projectDir).quiet();
+    const tsconfigPath = path.join(projectDir, "tsconfig.json");
+    const tsconfigText = await Bun.file(tsconfigPath).text();
+    const tsconfig = Bun.JSONC.parse(tsconfigText) as {
+      compilerOptions?: Record<string, unknown>;
+      [k: string]: unknown;
+    };
+    if (!tsconfig.compilerOptions) tsconfig.compilerOptions = {};
+    tsconfig.compilerOptions.jsx = "react-jsx";
+    tsconfig.compilerOptions.allowJs = true;
+    await Bun.write(
+      tsconfigPath,
+      JSON.stringify(tsconfig, null, 2)
+    );
+    console.log("│  TypeScript support added.");
+  }
+
   console.log("└  Done!\n");
   console.log("  [1] 다음 명령으로 개발 서버 실행:\n");
   console.log(`   cd ${targetDir}`);
