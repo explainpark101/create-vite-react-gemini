@@ -148,8 +148,18 @@ jobs:
     ).quiet();
     await $`bunx tsc --init`.cwd(projectDir).quiet();
     const tsconfigPath = path.join(projectDir, "tsconfig.json");
-    const tsconfigText = await Bun.file(tsconfigPath).text();
-    const tsconfig = Bun.JSONC.parse(tsconfigText) as {
+    // check if tsconfig exists
+    while (!existsSync(tsconfigPath)) {
+      await $`bunx tsc --init`.cwd(projectDir).quiet();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    let tsconfigText = await Bun.file(tsconfigPath).text();
+    // Strip comments and trailing commas so JSON.parse works
+    tsconfigText = tsconfigText
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/\/\/.*$/gm, "")
+      .replace(/,(\s*[}\]])/g, "$1");
+    const tsconfig = JSON.parse(tsconfigText) as {
       compilerOptions?: Record<string, unknown>;
       [k: string]: unknown;
     };

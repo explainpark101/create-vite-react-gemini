@@ -1,6 +1,6 @@
 {
   "name": "create-vite-react-gemini",
-  "version": "1.0.7",
+  "version": "1.1.2",
   "module": "index.ts",
   "type": "module",
   "bin": {
