@@ -193,6 +193,9 @@ jobs:
   console.log("    (4) Github Actions가 완료된 이후 Repository 설정에서 Pages의 Branch를 gh-pages로 설정");
   console.log("    (5) Github Pages URL로 접속");
 }
+// When Deploy failed with branch protection rule
+// https://stackoverflow.com/questions/76937061/branch-master-is-not-allowed-to-deploy-to-github-pages-due-to-environment-prot
+
 
 main().catch((err) => {
   console.error(err);
