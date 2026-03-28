@@ -25,7 +25,7 @@ async function main() {
   );
 
   // 1. create-vite로 react 템플릿 프로젝트 생성
-  const createViteResult = await $`bun create vite ${targetDir} --no-interactive --template react`.cwd(
+  const createViteResult = await $`bun create vite@latest ${targetDir} --no-interactive --template react`.cwd(
     cwd
   ).quiet();
   // .quiet();
